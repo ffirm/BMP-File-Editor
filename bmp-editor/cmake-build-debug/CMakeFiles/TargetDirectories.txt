@@ -1,0 +1,3 @@
+C:/Users/firmt/Git/BMP-File-Editor/bmp-editor/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/firmt/Git/BMP-File-Editor/bmp-editor/cmake-build-debug/CMakeFiles/bmp_editor.dir
+C:/Users/firmt/Git/BMP-File-Editor/bmp-editor/cmake-build-debug/CMakeFiles/rebuild_cache.dir
