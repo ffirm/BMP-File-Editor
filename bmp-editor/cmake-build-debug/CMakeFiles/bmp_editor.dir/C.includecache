@@ -9,4 +9,6 @@
 C:/Users/firmt/Git/BMP-File-Editor/bmp-editor/main.c
 stdio.h
 -
+stdlib.h
+-
 
