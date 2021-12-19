@@ -34,9 +34,11 @@ int main() {
     greenland = &pic2;
     bmp_info *deer, pic3;
     deer = &pic3;
-    
+
     read_bmp("../greenland_grid_velo.bmp", greenland);
     read_bmp("../blackbuck.bmp", deer);
+
+    merge_bmp(greenland, deer);
 
     free(greenland);
     free(deer);
@@ -94,11 +96,78 @@ void read_bmp(char* path, bmp_info *infoPtr) {
     printf("height: %d\n", infoPtr->height);
     printf("width: %d\n", infoPtr->width);
     printf("bits per pixel: %d\n", infoPtr->bpp);
-    printf("pixel arrays starts at: 0x%X\n", infoPtr->array_offset);
+    printf("pixel arrays starts at: 0x%X\n\n", infoPtr->array_offset);
 
-    byte temp[2];
-    fseek(fp, BITS_PER_PIXEL_OFFSET, SEEK_SET);
-    fread(temp, 2, 1, fp);
-    printf("%d\n", temp);
+//    byte temp[2];
+//    fseek(fp, BITS_PER_PIXEL_OFFSET, SEEK_SET);
+//    fread(temp, 2, 1, fp);
+//    printf("%d\n", temp);
 }
 
+void merge_bmp(bmp_info *p1, bmp_info *p2){
+    // will create a new bmp image from the two given image
+    // pic1 on top of pic2
+
+    // check if the two bmp are compatible or not
+    if (p1->bpp != p2->bpp){
+        printf("Incompatible bpp");
+        exit(1);
+    }
+
+    // allocating memory for the new bmp
+    size_t total_size = p1->image_size + p2->image_size;
+    byte *pic_arr = (byte*)malloc(total_size);
+
+    bmp_info new_bmp;
+    // width
+    if (p1->width > p2->width){
+        new_bmp.width = p1->width;
+    }
+    //height
+    new_bmp.height = p1->height + p2->height;
+    new_bmp.array_offset = 54;
+    new_bmp.image_size = total_size;
+    new_bmp.bpp = p1->bpp;
+
+    // assigning 0 to the array
+    for (int i = 0; i < total_size; i++){
+        pic_arr[i] = 0;
+    }
+
+    // bitmap structure
+    // bitmap signature
+    pic_arr[0] = 'B';
+    pic_arr[1] = 'M';
+
+    // file size
+    pic_arr[2] = 0;
+    pic_arr[3] = 0;
+    pic_arr[4] = 0;
+    pic_arr[5] = 0;
+
+    // pixel array offset starts
+    pic_arr[10] = new_bmp.array_offset;
+
+    // DIB header
+    // dib header size
+    pic_arr[14] = 28;
+    // width
+    pic_arr[18] = new_bmp.width;
+    //height
+    pic_arr[22] = new_bmp.height;
+    //bpp
+    pic_arr[28] = new_bmp.bpp;
+
+    // assigning value to the pixel array
+
+    // bottom pic width is smaller than top pic width so white pixels will substitute the remaining pixels
+    if (p1->width > p2->width){
+        for (size_t i = 0; i < new_bmp.height; i++){
+            for (size_t j = 0; j < new_bmp.width; j++){
+                if (j <= new_bmp.width){
+                    pic_arr[new_bmp.array_offset + j] = 
+                }
+            }
+        }
+    }
+}
