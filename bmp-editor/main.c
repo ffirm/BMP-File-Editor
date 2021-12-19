@@ -23,7 +23,8 @@ typedef struct bmp_info {
 
 void slice_str(const char *str, char *buffer, size_t start, size_t end);
 void read_bmp(char *path, bmp_info *infoPtr);
-void merge_bmp();
+void merge_bmp(bmp_info *p1, bmp_info *p2);
+void copy_bmp(char *path);        // creating a duplicate bmp file
 
 int main() {
 //    bmp_info *infoPtr, pic1;
@@ -44,6 +45,31 @@ int main() {
     free(deer);
 
     return 0;
+}
+
+void copy_bmp(char *path){
+    FILE *read = fopen(path, "rb");
+    if (read ==  NULL){
+        printf("error fopen read");
+        exit(1);
+    }
+
+    fseek(read, 0, SEEK_END);
+    size_t f_size = ftell(read);
+
+    byte *temp = (byte*)malloc(f_size);
+
+    fseek(read, 0, SEEK_SET);
+    int res = fread(temp, 1, f_size, read);
+    printf("res=%d", res);
+
+    FILE *write = fopen("duplicate.bmp", "wb");
+    for (size_t i = 0; i < f_size; i++){
+        fputc(temp[i], write);
+    }
+    
+    fclose(read);
+    fclose(write);
 }
 
 void read_bmp(char* path, bmp_info *infoPtr) {
@@ -135,6 +161,7 @@ void merge_bmp(bmp_info *p1, bmp_info *p2){
     }
 
     // bitmap structure
+
     // bitmap signature
     pic_arr[0] = 'B';
     pic_arr[1] = 'M';
@@ -165,9 +192,17 @@ void merge_bmp(bmp_info *p1, bmp_info *p2){
         for (size_t i = 0; i < new_bmp.height; i++){
             for (size_t j = 0; j < new_bmp.width; j++){
                 if (j <= new_bmp.width){
-                    pic_arr[new_bmp.array_offset + j] = 
+                    pic_arr[new_bmp.array_offset + j] = *(p1->pixel_array + j);
                 }
             }
         }
     }
+
+    // writing the bmp array into a new bmp file
+    FILE *write;
+    write = fopen("../merged.bmp", "wb");
+    for (int i = 0; i < new_bmp.image_size; i++){
+        fputc(pic_arr[i], write);
+    }
+    fclose(write);
 }
